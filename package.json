@@ -1,0 +1,22 @@
+{
+  "name": "vanilla-playengine",
+  "version": "1.0.0",
+  "description": "Video streaming in groups",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheNamesRai/vanilla-playengine.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheNamesRai/vanilla-playengine/issues"
+  },
+  "homepage": "https://github.com/TheNamesRai/vanilla-playengine#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
