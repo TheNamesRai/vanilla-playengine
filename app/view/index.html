@@ -38,12 +38,12 @@
 <script>
     function sendOnClick(){
         alert("asfsa");
-        $.post($.post("http://localhost:3001/messages", {"hello" : "world"}));
+        $.post($.post("http://localhost:3001/actions", {"hello" : "world"}));
     }
     
     var socket = io();
 
-    socket.on('message', addMessages);
+    socket.on('action', addMessages);
 
     function addMessages (message) {
         alert(message);
