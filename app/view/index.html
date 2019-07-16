@@ -20,33 +20,38 @@
 
 </head>
 <body>
-<div class=”container”>
+<div class="container">
  <br>
- <div class=”jumbotron”>
+ <div class="jumbotron">
  <h1 class="display-4">Send Message</h1>
  <br>
- <input id = “name” class=”form-control” placeholder=”Name”>
+ <input id = "name" class="form-control" placeholder="Name">
  <br>
- <textarea id = “message” class=”form-control” placeholder="Your Message Here"></textarea>
+ <textarea id = "message" class="form-control" placeholder="Your Message Here"></textarea>
  <br>
- <button id=”send” class="btn btn-success" onclick="sendOnClick()">Send</button>
+ <button id="send" class="btn btn-success" onclick="sendOnClick()">Send</button>
  </div>
- <div id=”messages”>
+ <div id="messages">
  
 </div>
 </div>
 <script>
+    const room = 'room1';
+    var socket = io('/rooms');
+
+    socket.on('connect', () => {
+        socket.emit('join', {room : room});
+    });
+
+
+    socket.on("action", (data) => {
+        document.getElementById("message").value = data.msg;
+    });
+
     function sendOnClick(){
-        alert("asfsa");
-        $.post($.post("http://localhost:3001/actions", {"hello" : "world"}));
-    }
-    
-    var socket = io();
-
-    socket.on('action', addMessages);
-
-    function addMessages (message) {
-        alert(message);
+        var msg = document.getElementById("message").value;
+        socket.emit('event', {msg, room});
+        //$.post($.post("http://localhost:3001/actions", {"hello" : "world"}));
     }
 
 </script>
