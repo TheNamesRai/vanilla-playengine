@@ -8,6 +8,11 @@ app.use(express.static("./app/view"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
+
+app.get('/', function(request, response) {
+    response.sendFile(__dirname + '/app/view/playerPage/playerPage.html');
+})
+
 //rooms Namespace
 const rooms = io.of('/rooms');
 
