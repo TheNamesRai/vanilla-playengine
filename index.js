@@ -19,6 +19,7 @@ const rooms = io.of('/rooms');
 rooms.on('connection', (socket) =>{
 
     socket.on('join', (data) => {
+        console.log("Joined " + data.room);
         socket.join(data.room);
     });
 

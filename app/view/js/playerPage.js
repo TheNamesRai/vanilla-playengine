@@ -1,5 +1,12 @@
-
+// Joining the namespace through socket
+var socket = io('/rooms');
+var room = "room1";
+socket.on('connect', () => {
+    socket.emit('join', {room : room});
+});
 var tag = document.createElement('script');
+
+var system = true;
 
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -30,23 +37,31 @@ function onPlayerReady(event) {
 
 }
 function onPlayerStateChange(event) {
-    if (event.data == YT.PlayerState.PLAYING) {
-        alert("Video is Playing !!!");
+    if (event.data == YT.PlayerState.PLAYING && system == true) {
+        socket.emit('event',{'action' : 'PLAY', room : room});
     }
-    else if (event.data == YT.PlayerState.PAUSED) {
-        alert("Video is Paused !!!");
+    else if (event.data == YT.PlayerState.PAUSED && system == true) {
+        socket.emit('event',{'action' : 'PAUSE', room : room});
     }
-    else if (event.data == YT.PlayerState.ENDED) {
-        alert('done');
+    else if (event.data == YT.PlayerState.ENDED && system == true) {
+        socket.emit('event',{'action' : 'DONE', room : room});
     } 
-    else if (event.data == YT.PlayerState.BUFFERING) {
+    else if (event.data == YT.PlayerState.BUFFERING && system == true) {
         var newPlayerTime = player.getCurrentTime();
-        alert("Video is jumped to : " + newPlayerTime);
+        socket.emit('event',{'action' : 'JUMP',newPlayerTime : newPlayerTime, room : room});
     }
 }
 
 function stopVideo() {
     player.stopVideo();
+}
+
+function pauseVideo(){
+    player.pauseVideo();
+}
+
+function playVideo() {
+    player.playVideo();
 }
 
 function loadNewVideo(videoId) {
@@ -132,3 +147,16 @@ function getVideoId(videoURL) {
     var endPosition = startPosition + 11;
     return videoURL.slice(startPosition, endPosition);
 }
+
+socket.on('action', (data) => {
+    system = false;
+    if(data.action === 'PLAY'){
+        playVideo();
+    }else if (data.action === 'PAUSE'){
+        pauseVideo();
+    }
+    else if(data.action === 'JUMP'){
+
+    }
+    system = true;
+});
