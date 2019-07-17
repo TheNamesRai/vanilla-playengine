@@ -38,7 +38,8 @@ function onPlayerReady(event) {
 }
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.PLAYING && system == true) {
-        socket.emit('event', { 'action': 'PLAY', room: room });
+        var newPlayerTime = player.getCurrentTime();
+        socket.emit('event', { 'action': 'PLAY', newPlayerTime: newPlayerTime, room: room });
     }
     else if (event.data == YT.PlayerState.PAUSED && system == true) {
         socket.emit('event', { 'action': 'PAUSE', room: room });
@@ -156,22 +157,28 @@ function getVideoId(videoURL) {
 
 socket.on('action', (data) => {
     system = false;
-    if (data.action === 'PLAY') {
-        playVideo();
-    } else if (data.action === 'PAUSE') {
-        pauseVideo();
-    }
-    else if (data.action === 'JUMP') {
+    if (data.action === 'PLAY' || data.action === 'JUMP') {
         playAt(data.newPlayerTime);
+        playVideo();
+        setTimeout(setGlobalSystem, 1000);
+    } else {
+        if (data.action === 'PAUSE') {
+            pauseVideo();
+        }
+        else if (data.action === 'LOAD_NEW_VIDEO') {
+            loadNewVideo(data.videoId);
+        }
+        else if (data.action === 'ADD_VIDEO') {
+            createQueueItem(data.videoURL);
+        }
+        system = true;
     }
-    else if (data.action === 'LOAD_NEW_VIDEO') {
-        loadNewVideo(data.videoId);
-    }
-    else if (data.action === 'ADD_VIDEO') {
-        createQueueItem(data.videoURL);
-    }
-    system = true;
+    //setTimeout(setGlobalSystem, 1000);
 });
+
+function setGlobalSystem(){
+    system = true;
+}
 
 document.getElementById("search").addEventListener("keyup", function (event) {
     if (event.keyCode === 13) {
