@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+const PORT = process.env.PORT || 8000
 
 app.use(express.static("./app/view"));
 app.use(bodyParser.json());
@@ -32,7 +33,7 @@ rooms.on('connection', (socket) =>{
   
 
   
-var server = http.listen(3001, () => {
+var server = http.listen(PORT, () => {
 console.log('server is running on port', server.address().port);
 });
 
