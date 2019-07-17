@@ -2,7 +2,7 @@
 var socket = io('/rooms');
 var room = "room1";
 socket.on('connect', () => {
-    socket.emit('join', {room : room});
+    socket.emit('join', { room: room });
 });
 var tag = document.createElement('script');
 
@@ -38,17 +38,17 @@ function onPlayerReady(event) {
 }
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.PLAYING && system == true) {
-        socket.emit('event',{'action' : 'PLAY', room : room});
+        socket.emit('event', { 'action': 'PLAY', room: room });
     }
     else if (event.data == YT.PlayerState.PAUSED && system == true) {
-        socket.emit('event',{'action' : 'PAUSE', room : room});
+        socket.emit('event', { 'action': 'PAUSE', room: room });
     }
     else if (event.data == YT.PlayerState.ENDED && system == true) {
-        socket.emit('event',{'action' : 'DONE', room : room});
-    } 
+        socket.emit('event', { 'action': 'DONE', room: room });
+    }
     else if (event.data == YT.PlayerState.BUFFERING && system == true) {
         var newPlayerTime = player.getCurrentTime();
-        socket.emit('event',{'action' : 'JUMP',newPlayerTime : newPlayerTime, room : room});
+        socket.emit('event', { 'action': 'JUMP', newPlayerTime: newPlayerTime, room: room });
     }
 }
 
@@ -56,7 +56,7 @@ function stopVideo() {
     player.stopVideo();
 }
 
-function pauseVideo(){
+function pauseVideo() {
     player.pauseVideo();
 }
 
@@ -65,14 +65,14 @@ function playVideo() {
 }
 
 function loadNewVideo(videoId) {
-        var videoId = videoId;
-        var startSeconds = 0;
-        var suggestedQuality = "large";
-        player.loadVideoById({
-            videoId: videoId,
-            startSeconds: startSeconds,
-            suggestedQuality: suggestedQuality
-        });
+    var videoId = videoId;
+    var startSeconds = 0;
+    var suggestedQuality = "defalut";
+    player.loadVideoById({
+        videoId: videoId,
+        startSeconds: startSeconds,
+        suggestedQuality: suggestedQuality
+    });
 }
 
 function playAt(jumpedTime) {
@@ -94,36 +94,42 @@ function addVideoItem(videoURL) {
         alert("Please Enter URL");
         return;
     }
+    socket.emit('event', { 'action': 'ADD_VIDEO', videoURL: videoURL, room: room });
+}
+
+function createQueueItem(videoURL) {
     var videoId = getVideoId(videoURL);
-    var videoItem = getElement("div",videoId,"vid-item",null,null,null);
-    var thubDiv = getElement("div",null,"thumb",videoItemOnClick,null,null);
-    var img = getElement("img",null,null,null,getImgSrc(videoId),null);
+    var videoItem = getElement("div", videoId, "vid-item", null, null, null);
+    var thubDiv = getElement("div", videoId, "thumb", videoItemOnClick, null, null);
+    var img = getElement("img", null, null, null, getImgSrc(videoId), null);
     thubDiv.appendChild(img);
-    var descDiv = getElement("div",null,"desc",videoItemOnClick,null,"Desc...")
-    var removeDiv = getElement("div",videoId,"remove",removeOnClick,null,"Remove");
+    var descDiv = getElement("div", videoId, "desc", videoItemOnClick, null, "Desc...")
+    var removeDiv = getElement("div", videoId, "remove", removeOnClick, null, "Remove");
     videoItem.appendChild(thubDiv);
     videoItem.appendChild(descDiv);
     videoItem.appendChild(removeDiv);
     document.getElementsByClassName("vid-list")[0].appendChild(videoItem);
 }
 
-function getElement(type,id,className,onclick,src,innerHTML){
+function getElement(type, id, className, onclick, src, innerHTML) {
     var elem = document.createElement(type);
-    if(id)
+    if (id)
         elem.id = id;
-    if(className)
+    if (className)
         elem.className = className;
-    if(onclick)
+    if (onclick)
         elem.onclick = onclick;
-    if(src)
+    if (src)
         elem.src = src;
-    if(innerHTML)
+    if (innerHTML)
         elem.innerHTML = innerHTML;
     return elem;
 }
 
 function videoItemOnClick() {
-    loadNewVideo(this.id);
+    var videoId = this.id;
+    loadNewVideo(videoId);
+    socket.emit('event', { 'action': 'LOAD_NEW_VIDEO', videoId: videoId, room: room });
 }
 
 function getImgSrc(videoId) {
@@ -150,13 +156,19 @@ function getVideoId(videoURL) {
 
 socket.on('action', (data) => {
     system = false;
-    if(data.action === 'PLAY'){
+    if (data.action === 'PLAY') {
         playVideo();
-    }else if (data.action === 'PAUSE'){
+    } else if (data.action === 'PAUSE') {
         pauseVideo();
     }
-    else if(data.action === 'JUMP'){
-
+    else if (data.action === 'JUMP') {
+        playAt(data.newPlayerTime);
+    }
+    else if (data.action === 'LOAD_NEW_VIDEO') {
+        loadNewVideo(data.videoId);
+    }
+    else if (data.action === 'ADD_VIDEO') {
+        createQueueItem(data.videoURL);
     }
     system = true;
 });
