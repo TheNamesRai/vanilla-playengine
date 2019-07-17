@@ -172,3 +172,10 @@ socket.on('action', (data) => {
     }
     system = true;
 });
+
+document.getElementById("search").addEventListener("keyup", function (event) {
+    if (event.keyCode === 13) {
+        event.preventDefault();
+        addVideoItem(this.value)
+    }
+});
