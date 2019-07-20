@@ -80,16 +80,6 @@ function playAt(jumpedTime) {
     player.seekTo(jumpedTime);
 }
 
-function arrowScrollLeft() {
-    var elem = document.getElementsByClassName("vid-list-container")[0];
-    elem.scrollLeft -= 336;
-}
-
-function arrowScrollRight() {
-    var elem = document.getElementsByClassName("vid-list-container")[0];
-    elem.scrollLeft += 336;
-}
-
 function addVideoItem(videoURL) {
     if (videoURL == "") {
         alert("Please Enter URL");
@@ -143,10 +133,13 @@ function getVideoTitle() {
 }
 
 function removeOnClick() {
-    var parentNode = document.getElementById(this.id).parentNode;
-    var removeElem = document.getElementById(this.id);
+    socket.emit('event', { 'action': 'REMOVE_VIDEO', videoId: this.id, room: room });
+}
+
+function removeQueueItem(id){
+    var parentNode = document.getElementById(id).parentNode;
+    var removeElem = document.getElementById(id);
     parentNode.removeChild(removeElem);
-    alert("Removed from Queue");
 }
 
 function getVideoId(videoURL) {
@@ -170,6 +163,9 @@ socket.on('action', (data) => {
         }
         else if (data.action === 'ADD_VIDEO') {
             createQueueItem(data.videoURL);
+        }
+        else if (data.action === 'REMOVE_VIDEO') {
+            removeQueueItem(data.videoId);
         }
         system = true;
     }
