@@ -1,6 +1,6 @@
 // Joining the namespace through socket
 var socket = io('/rooms');
-var room = "room1";
+
 socket.on('connect', () => {
     socket.emit('join', { room: room });
 });

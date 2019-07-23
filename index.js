@@ -6,12 +6,23 @@ var io = require('socket.io')(http);
 const PORT = process.env.PORT || 8000
 
 app.use(express.static("./app/view"));
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 
+const MongoClient = require('mongodb').MongoClient;
+const uri = process.env.url || require('./config/database.config').url;
+const client = new MongoClient(uri, { useNewUrlParser: true });
+client.connect(err => {
+  console.log("Connected");
+  client.close();
+});
+
+
 app.get('/', function(request, response) {
-    response.sendFile(__dirname + '/app/view/playerPage/playerPage.html');
+    response.render(__dirname + '/app/view/playerPage/playerPage.html', {room : "room1"});
 })
 
 //rooms Namespace
@@ -23,7 +34,6 @@ rooms.on('connection', (socket) =>{
         console.log("Joined " + data.room);
         socket.join(data.room);
     });
-
 
     socket.on('event', (data) => {
         console.log(data);
