@@ -8,9 +8,25 @@
 
 <div class="bg-image"></div>
 
+
 <div class="bg-text">
+    <h3 class = "error"><%= err%></h3>
   <h2>Welcome To Vanilla-PlayEngine</h2>
+  <input type="text" name="roomname" id="roomtext" >
+  <button onclick="createNewRoom()">New Room</button>
+  <button onclick="joinRoomIfExist()">Join Room</button>
 </div>
+
+<script>
+function createNewRoom(){
+  var roomname = document.getElementById('roomtext');
+  
+}
+
+function joinRoomIfExist(){
+
+}
+</script>
 
 </body>
 </html>

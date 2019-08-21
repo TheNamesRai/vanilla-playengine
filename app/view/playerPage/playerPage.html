@@ -41,6 +41,8 @@ background: #ddd;
     </div>
     <div class="vid-list"></div>
     <script> room = "<%= room %>"; 
+    data = <%- JSON.stringify(data) %>;
+    alert(JSON.stringify(data));
     </script>
     <script src="js/playerPage.js"></script>
 </body>

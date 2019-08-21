@@ -11,19 +11,29 @@ app.set('view engine', 'html');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-
-const MongoClient = require('mongodb').MongoClient;
 const uri = process.env.url || require('./config/database.config').url;
-const client = new MongoClient(uri, { useNewUrlParser: true });
-client.connect(err => {
-  console.log("Connected");
-  client.close();
+const mongoose = require('mongoose');
+
+mongoose.Promise = global.Promise;
+
+// Connecting to the database
+mongoose.connect(uri, {
+    useNewUrlParser: true
+}).then(() => {
+    console.log("Successfully connected to the database");    
+}).catch(err => {
+    console.log('Could not connect to the database. Exiting now...', err);
+    process.exit();
 });
 
 
 app.get('/', function(request, response) {
-    response.render(__dirname + '/app/view/playerPage/playerPage.html', {room : "room1"});
-})
+    response.render(__dirname + '/app/view/welcomePage/welcomePage.html', {err : ""});
+});
+
+// all routes for the portfolio apis
+require('./app/routes/rooms.route.js')(app);
+
 
 //rooms Namespace
 const rooms = io.of('/rooms');
