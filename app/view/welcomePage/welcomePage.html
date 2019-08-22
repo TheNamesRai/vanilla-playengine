@@ -2,7 +2,14 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="css/welcomePage.css">
+<script> 
+  var fileref=document.createElement("link")
+  fileref.setAttribute("rel", "stylesheet")
+  fileref.setAttribute("type", "text/css")
+  fileref.setAttribute("href", window.location.protocol + "/css/welcomePage.css");
+  if (typeof fileref!="undefined")
+      document.getElementsByTagName("head")[0].appendChild(fileref)
+</script>
 </head>
 <body>
 
@@ -10,22 +17,90 @@
 
 
 <div class="bg-text">
-    <h3 class = "error"><%= err%></h3>
+    <h3 class = "error" id = "error"><%= err%></h3>
   <h2>Welcome To Vanilla-PlayEngine</h2>
   <input type="text" name="roomname" id="roomtext" >
-  <button onclick="createNewRoom()">New Room</button>
-  <button onclick="joinRoomIfExist()">Join Room</button>
+  <button id="clickNewRoom">New Room</button>
+  <button id="clickJoinRoom">Join Room</button>
 </div>
 
 <script>
-function createNewRoom(){
-  var roomname = document.getElementById('roomtext');
+
+document.getElementById("clickNewRoom").addEventListener("click", clickNewRoom);
+document.getElementById("clickJoinRoom").addEventListener('click', clickJoinRoom);
+
+function clickNewRoom(){
+  var room_name = document.getElementById('roomtext').value;
+  var roomExists = doesRoomExists(room_name);
+  roomExists.then(data => {
+    
+    if(data.roomExists == true){
+      document.getElementById('error').innerHTML = "Room already exists";
+    }
+    else{
+      var createRoom = createRoomIfNotExists(room_name);
+      createRoom.then(data => {
+        loadRoom(room_name);
+      });
+    }
+  });
   
 }
 
-function joinRoomIfExist(){
-
+function clickJoinRoom(){
+  var room_name = document.getElementById('roomtext').value;
+  var roomExists = doesRoomExists(room_name);
+  roomExists.then(data => {
+    if(data.roomExists == true){
+      loadRoom(room_name);
+    }
+    else{
+      document.getElementById('error').value = "Room does not exist";
+    }
+  });
 }
+
+function loadRoom(room_name){
+  var url = window.location.protocol + "/rooms/" + room_name;
+  window.location.href = url;
+}
+
+function createRoomIfNotExists(room_name){
+  var host = window.location.host;
+  var url = window.location.protocol + host + "/rooms/create";
+  var request = {
+    "room_name" : room_name
+  }
+  return fetch(url, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type' : 'application/json'
+    },
+    body: JSON.stringify(request)
+  }).then(response => {
+    return response.json();
+  });
+}
+
+function doesRoomExists(room_name){
+  var host = window.location.host;
+  var url = window.location.protocol + "/rooms/exists";
+  var request = {
+    "room_name" : room_name
+  }
+  return fetch(url, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type' : 'application/json'
+    },
+    body: JSON.stringify(request)
+  }).then(response => {
+    return response.json();
+  });
+}
+
 </script>
 
 </body>

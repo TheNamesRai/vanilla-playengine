@@ -2,13 +2,16 @@ var roomsModel = require('../models/rooms.model.js');
 
 
 exports.roomExists = (req, res) => {
+    console.log("------roomExists entry------");
     roomsModel.findOne({ name : req.body.room_name} , (err, room) => {
         if(err || !room) {
+            console.log('------roomExists exit false------');
             res.send({
                 roomExists : false
             });
         }
         else{
+            console.log('------roomExists exit true------');
             res.send({
                 roomExists : true
             });

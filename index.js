@@ -1,11 +1,12 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
+var path = require("path");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 const PORT = process.env.PORT || 8000
 
-app.use(express.static("./app/view"));
+app.use(express.static(path.join(__dirname + "/app/view")));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use(bodyParser.json());
