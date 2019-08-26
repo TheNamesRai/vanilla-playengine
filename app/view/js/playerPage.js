@@ -4,6 +4,7 @@ var socket = io('/rooms');
 socket.on('connect', () => {
     socket.emit('join', { room: room });
 });
+
 var tag = document.createElement('script');
 
 var system = true;
@@ -14,11 +15,22 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var player;
 
+// Adding the saved list to new session
+if(data.videos.length > 0){
+    for(var i = 0; i < data.videos.length; i++){
+        createQueueItem("https://www.youtube.com/watch?v=" + data.videos[i]);
+    }
+}
+
 function onYouTubeIframeAPIReady() {
+
+    //Loading the last selected video
+    var videoID = data.video;
+
     player = new YT.Player('vid_frame', {
         height: '560',
         width: '315',
-        videoId: 'M7lc1UVf-VE',
+        videoId: videoID,
         playerVars: {
             'autoplay': 1,
             'controls': 1
@@ -34,7 +46,6 @@ function onYouTubeIframeAPIReady() {
 var playerReady = false;
 function onPlayerReady(event) {
     playerReady = true;
-
 }
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.PLAYING && system == true) {
@@ -85,7 +96,8 @@ function addVideoItem(videoURL) {
         alert("Please Enter URL");
         return;
     }
-    socket.emit('event', { 'action': 'ADD_VIDEO', videoURL: videoURL, room: room });
+    var videoId = getVideoId(videoURL);
+    socket.emit('event', { 'action': 'ADD_VIDEO', videoId: videoId, room: room });
 }
 
 function createQueueItem(videoURL) {
@@ -119,7 +131,7 @@ function getElement(type, id, className, onclick, src, innerHTML) {
 
 function videoItemOnClick() {
     var videoId = this.id;
-    loadNewVideo(videoId);
+    //loadNewVideo(videoId);
     socket.emit('event', { 'action': 'LOAD_NEW_VIDEO', videoId: videoId, room: room });
 }
 
@@ -162,7 +174,8 @@ socket.on('action', (data) => {
             loadNewVideo(data.videoId);
         }
         else if (data.action === 'ADD_VIDEO') {
-            createQueueItem(data.videoURL);
+            var videoURL = "https://www.youtube.com/watch?v=" + data.videoId;
+            createQueueItem(videoURL);
         }
         else if (data.action === 'REMOVE_VIDEO') {
             removeQueueItem(data.videoId);

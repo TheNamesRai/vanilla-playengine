@@ -7,12 +7,8 @@ const roomsSchema = mongoose.Schema({
         unique : true,
         dropDups: true
     },
-    videos : [{
-            type : String
-    }],
-    video : {
-        type : Number
-    }
+    videos : [String],
+    video : String
 },{
     // Mongoose automatically adds createdAt and updatedAt in the schema
     timestamps : true   

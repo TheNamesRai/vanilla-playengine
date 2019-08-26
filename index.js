@@ -41,6 +41,7 @@ const rooms = io.of('/rooms');
 
 rooms.on('connection', (socket) =>{
 
+    var roomController = require('./app/controllers/rooms.controller.js');
     socket.on('join', (data) => {
         console.log("Joined " + data.room);
         socket.join(data.room);
@@ -48,6 +49,15 @@ rooms.on('connection', (socket) =>{
 
     socket.on('event', (data) => {
         console.log(data);
+        if (data.action === 'ADD_VIDEO'){
+            roomController.addVideo(data.room, data.videoId);
+        }
+        else if(data.action === 'REMOVE_VIDEO'){
+            roomController.deleteVideo(data.room, data.videoId);
+        }
+        else if(data.action === 'LOAD_NEW_VIDEO'){
+            roomController.updateVideo(data.room, data.videoId)
+        }
         rooms.in(data.room).emit('action', data);
     });
 });

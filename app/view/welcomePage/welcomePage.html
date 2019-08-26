@@ -55,7 +55,7 @@ function clickJoinRoom(){
       loadRoom(room_name);
     }
     else{
-      document.getElementById('error').value = "Room does not exist";
+      document.getElementById('error').innerHTML = "Room does not exist";
     }
   });
 }
@@ -67,7 +67,7 @@ function loadRoom(room_name){
 
 function createRoomIfNotExists(room_name){
   var host = window.location.host;
-  var url = window.location.protocol + host + "/rooms/create";
+  var url = window.location.protocol + "/rooms/create";
   var request = {
     "room_name" : room_name
   }

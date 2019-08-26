@@ -22,7 +22,7 @@ exports.roomExists = (req, res) => {
 exports.createRoom = (req, res) => {
     const room = new roomsModel({
         name : req.body.room_name,
-        video : -1,
+        video : "",
         videos: []
     });
 
@@ -53,7 +53,6 @@ exports.deleteRoom = (req,res) => {
 }
 
 exports.loadRoom = (req, res) => {
-    console.log(req.params.room_name);
     roomsModel.findOne({ name : req.params.room_name} , (err, roomObj) => {
         if(err || !roomObj) {
             res.send({
@@ -78,3 +77,34 @@ exports.getAllRooms = (req, res) => {
         });
     });
 };
+
+exports.addVideo = (room_name, videoId) => {
+    function cb(){
+        console.log("Successfully added " + videoId + " in room : " + room_name);
+    }
+    roomsModel.updateOne({name : room_name}, { $push: {videos : videoId}}).exec(cb);
+};
+
+exports.deleteVideo = (room_name, videoId) => {
+    //videoId = "https://www.youtube.com/watch?v=" + videoId;
+    console.log(room_name + " : " + videoId);
+    roomsModel.updateOne({name : room_name}, {$pull: {videos : videoId }}, function(err, data){
+        if(err){
+            console.log("error : " + err);
+        }
+        if(data){
+            console.log("data : " + JSON.stringify(data) );
+        }
+    });
+};
+
+exports.updateVideo = (room_name, videoId) => {
+    roomsModel.updateOne({name : room_name}, { $set: { video : videoId}}, function(err, data){
+        if(err){
+            console.log("error : " + err);
+        }
+        if(data){
+            console.log("data : " + JSON.stringify(data) );
+        }
+    });
+}
