@@ -30,6 +30,7 @@ mongoose.connect(uri, {
 
 
 app.get('/', function(request, response) {
+    console.log(__dirname + '/app/view/welcomePage/welcomePage.html');
     response.render(__dirname + '/app/view/welcomePage/welcomePage.html', {err : ""});
 });
 
