@@ -60,9 +60,6 @@ exports.loadRoom = (req, res) => {
             });
         }
         else{
-            var directoryPath = __dirname;
-            var n = directoryPath.lastIndexOf('/');
-            directoryPath = directoryPath.slice(0,n);
             res.render('playerPage/playerPage.html', {err : "", data : {videos : roomObj.videos, video: roomObj.video}, room : req.params.room_name});
         }
     });
