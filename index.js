@@ -7,6 +7,7 @@ var io = require('socket.io')(http);
 const PORT = process.env.PORT || 8000
 
 app.use(express.static(path.join(__dirname + "/app/view")));
+app.set('views', path.join(__dirname, '/app/view'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.use(bodyParser.json());
