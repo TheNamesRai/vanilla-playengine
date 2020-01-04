@@ -97,7 +97,19 @@ function addVideoItem(videoURL) {
         return;
     }
     var videoId = getVideoId(videoURL);
+    resetTextBox();
+    moveScrollBar();
     socket.emit('event', { 'action': 'ADD_VIDEO', videoId: videoId, room: room });
+}
+
+function resetTextBox(){
+    txt = document.getElementById("search")
+    txt.value = ""
+}
+
+function moveScrollBar(){
+    vidListEle = document.getElementsByClassName("vid-list")[0];
+    vidListEle.scrollLeft += 151
 }
 
 function createQueueItem(videoURL) {
@@ -106,7 +118,7 @@ function createQueueItem(videoURL) {
     var thubDiv = getElement("div", videoId, "thumb", videoItemOnClick, null, null);
     var img = getElement("img", null, null, null, getImgSrc(videoId), null);
     thubDiv.appendChild(img);
-    var descDiv = getElement("div", videoId, "desc", videoItemOnClick, null, "Desc...")
+    var descDiv = getElement("div", videoId, "desc", videoItemOnClick, null, getVideoTitle(videoId))
     var removeDiv = getElement("div", videoId, "remove", removeOnClick, null, "Remove");
     videoItem.appendChild(thubDiv);
     videoItem.appendChild(descDiv);
@@ -141,7 +153,34 @@ function getImgSrc(videoId) {
 }
 
 function getVideoTitle() {
-    //TO DO
+    const proxyurl = "https://cors-anywhere.herokuapp.com/";
+    const url = "http://youtube.com/get_video_info?video_id="+videoId; 
+    fetch(proxyurl +url) 
+    .then(response => response.text())
+    .then((contents) => {
+        console.log(contents)
+        data = contents
+        title = data.substring(data.indexOf("title")+14,data.indexOf("lengthSeconds")-9)
+        title = title.split("+")
+        s = ""
+        for (var i = 0; i < title.length; i++) {
+            if(title[i].indexOf("%") > 0){
+                title[i] = title[i].substring(0,title[i].indexOf("%"))
+            }
+        }
+        for (var i = 0; i < title.length; i++) {
+            console.log(title[i]);
+            if(!title[i].startsWith("%")){
+                s = s + title[i] + " "
+            }
+            else{
+                s = s + "| "
+            }
+        }
+        // alert(s)
+    })
+    .catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
+    return s
 }
 
 function removeOnClick() {
