@@ -177,10 +177,14 @@ function getVideoTitle() {
                 s = s + "| "
             }
         }
+        return s;
         // alert(s)
     })
-    .catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
-    return s
+    .catch(() => {
+        console.log("Can’t access " + url + " response. Blocked by browser?")
+        return "Desc ...";
+    })
+    
 }
 
 function removeOnClick() {
