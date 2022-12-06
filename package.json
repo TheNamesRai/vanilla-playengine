@@ -17,9 +17,9 @@
   },
   "homepage": "https://github.com/TheNamesRai/vanilla-playengine#readme",
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.1",
     "ejs": "^2.6.2",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "mongodb": "^3.3.0-beta2",
     "mongoose": "^5.6.6",
     "redis": "^2.8.0",
